@@ -1,0 +1,64 @@
+
+"index": {
+         "filters": {
+           "filters": {
+             "Assets": {
+               "wildcard": {
+                 "_index": "aella-assets-*"
+               }
+             },
+             "AWS Events": {
+               "wildcard": {
+                 "_index": "aella-cloudtrail-*"
+               }
+             },
+             "DP Monitoring": {
+               "term": {
+                 "_index": "aella-dp-monitor"
+               }
+             },
+             "Linux Events": {
+               "wildcard": {
+                 "_index": "aella-audit-*"
+               }
+             },
+             "ML-IDS/Malware Sandbox Events": {
+               "wildcard": {
+                 "_index": "aella-maltrace-*"
+               }
+             },
+             "Scans": {
+               "wildcard": {
+                 "_index": "aella-scan-*"
+               }
+             },
+             "Alerts": {
+               "wildcard": {
+                 "_index": "aella-ser-*"
+               }
+             },
+             "Sensor Monitoring": {
+               "wildcard": {
+                 "_index": "aella-ade-*"
+               }
+             },
+             "Syslog": {
+               "wildcard": {
+                 "_index": "aella-syslog-*"
+               }
+             },
+             "Traffic": {
+               "wildcard": {
+                 "_index": "aella-adr-*"
+               }
+             },
+             "Users": {
+               "wildcard": {
+                 "_index": "aella-users-*"
+               }
+             },
+             "Windows Events": {
+               "wildcard": {
+                 "_index": "aella-wineventlog-*"
+               }
+             }
