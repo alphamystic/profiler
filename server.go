@@ -10,7 +10,7 @@ import (
 )
 
 func main(){
-  utils.PTSB("white","[+] Cyflare Moja running at port 3000: This is an internal tool for internal soc team automation and insight sharing.")
+  utils.PTSB("white","PROFILER running at port 3000: This is an internal tool for internal soc team automation and insight sharing.")
   pfl := &PFLServer {
     Address: "0.0.0.0",
     PortS: 3001,
@@ -19,13 +19,19 @@ func main(){
     // TlsKey string
     Tls: false,
   }
-  svr,_ := pfl.CreateServer()
-  pfl.Tls = true
-  svrs,err := pfl.CreateServer()
+  var svr = new(http.Server)
+  var svrs = new(http.Server)
+  svr, err := pfl.CreateServer()
   if err != nil {
     panic(err)
   }
-  rtr := router.NewRouter(svr,svrs)
+  pfl.Tls = true
+  svrs,err = pfl.CreateServer()
+  if err != nil {
+    panic(err)
+  }
+  //mux := http.NewServeMux()
+  rtr := router.NewRouter(svrs,svr,http.NewServeMux())
   rtr.Run(true)
 }
 

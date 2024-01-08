@@ -21,9 +21,9 @@ type Router struct {
 }
 
 // should probably receive a server
-func NewRouter(httpsSvr,httpSvr *http.Server) *Router {
+func NewRouter(httpsSvr,httpSvr *http.Server,mux *http.ServeMux) *Router {
   return &Router {
-    Mux: http.NewServeMux(),
+    Mux: mux,
     HTTPSvr: httpSvr,
     HTTPSSvr: httpsSvr,
   }
@@ -31,6 +31,35 @@ func NewRouter(httpsSvr,httpSvr *http.Server) *Router {
 
 
 func (rtr *Router) Run(reg bool){
+  // create your db connection
+  dbConfig := ent.IntitializeConnector("root","","localhost","odin")
+  dbConn,err := ent.NewMySQLConnector(dbConfig)
+  if err != nil {
+    utils.Warning(fmt.Sprintf("Error connecting to the DB. \n[-]   ERROR: %s",err))
+    return
+  }
+
+  // create a request logger
+  rl := utils.NewRequestLogger("./.data/logs/requests/",066)
+  // create shutdown channels
+  ShutdownCh := make(chan bool)
+  DoneCh := make(chan bool)
+  //create  your handler
+  hnd,err := handlers.NewHandler(dbConn, ShutdownCh, DoneCh,rl)
+  if err != nil {
+    utils.Logerror(err)
+    return
+  }
+
+  fmt.Println("Registering routes.......")
+
+  //rtr.Mux.HandleFunc("/",hnd.Home)
+  rtr.Mux.HandleFunc("/pcapanalyzer",hnd.PcapAnalyzer)
+  rtr.Mux.HandleFunc("/blank",hnd.Blank)
+  rtr.Mux.HandleFunc("/test",hnd.Test)
+
+  fmt.Println("Handlers are registered............")
+
   // create a file server for the static files
   fs := http.FileServer(http.Dir("./static"))
   // Cache static files for 1 hour (adjust as needed)
@@ -53,29 +82,6 @@ func (rtr *Router) Run(reg bool){
     uploads.ServeHTTP(res,req)
   })))
 
-  // create your db connection
-  dbConfig := ent.IntitializeConnector("root","","localhost","odin")
-  dbConn,err := ent.NewMySQLConnector(dbConfig)
-  if err != nil {
-    utils.Warning(fmt.Sprintf("Error connecting to the DB. \n[-]   ERROR: %s",err))
-    return
-  }
-
-  // create a request logger
-  rl := utils.NewRequestLogger("./.data/logs/requests/",066)
-  // create shutdown channels
-  ShutdownCh := make(chan bool)
-  DoneCh := make(chan bool)
-  //create  your handler
-  hnd,err := handlers.NewHandler(dbConn, ShutdownCh, DoneCh,rl)
-  if err != nil {
-    utils.Logerror(err)
-    return
-  }
-
-  //rtr.Mux.HandleFunc("/",hnd.Home)
-  rtr.Mux.HandleFunc("/pcapanalyzer",hnd.PcapAnalyzer)
-
   // Start the server on the background
    go func(){
      if err := rtr.HTTPSvr.ListenAndServe(); err != http.ErrServerClosed {
@@ -84,27 +90,32 @@ func (rtr *Router) Run(reg bool){
    }()
    go func(){
      // we need to find a better way of supplying this
-     if err := rtr.HTTPSSvr.ListenAndServeTLS("../../../certs/server.crt", "../../../certs/server.key"); err != http.ErrServerClosed {
+     if err := rtr.HTTPSSvr.ListenAndServeTLS("./certs/server.crt", "./certs/server.key"); err != http.ErrServerClosed {
        log.Fatalf("[-] Error starting HTTPS server: %s\n",err.Error())
      }
    }()
    interruptChan := make(chan os.Signal,1)
    signal.Notify(interruptChan,os.Interrupt, syscall.SIGTERM)
    //sedn a close channel to the handler
-   hnd.ShutdownChan <- true
+   //hnd.ShutdownChan <- true
    // wait for the receiver to finish writing all logs
-   <-hnd.DoneChan
+  // <-hnd.DoneChan
    // read from the interrupt chan and shutdown
    <-interruptChan
    shutdownCtx,shutdownCancel := context.WithTimeout(context.Background(),5 * time.Second)
    defer shutdownCancel()
-   err = rtr.HTTPSvr.Shutdown(shutdownCtx)
-   if err != nil {
-     log.Fatalf("[-] Server shutdown error: %s\n",err.Error())
+   var errs []error
+   if err = rtr.HTTPSvr.Shutdown(shutdownCtx); err != nil {
+     log.Println("[-] Server shutdown error: %s\n",err.Error())
+     errs = append(errs,err)
    }
    err = rtr.HTTPSSvr.Shutdown(shutdownCtx)
    if err != nil {
-     log.Fatalf("[-] Server shutdown error: %s\n",err.Error())
+     log.Println("[-] Server shutdown error: %s\n",err.Error())
+     errs = append(errs,err)
    }
+   for _, err := range errs {
+        log.Println(err)
+    }
    log.Println("[+] Server gracefully stopped.")
 }

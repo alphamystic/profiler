@@ -41,7 +41,7 @@ type Handler struct {
 
 // Initiates new handler
 func NewHandler(db_connection *sql.DB, shutdownCh chan bool, doneCh chan bool,rl *utils.RequestLogger) (*Handler,error) {
-  tpl,err := template.ParseGlob("../templates/*.html")
+  tpl,err := template.ParseGlob("./moja/ui/templates/*.html")
   if err != nil{
     utils.Warning("[-]  Failed to load templates.")
     return nil,fmt.Errorf("[-]  This is not good like: ",err)

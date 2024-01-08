@@ -23,12 +23,12 @@ type Analysis struct {
 	SourceIP net.IP // should be equal to "MY" IP but different for .pcap or dns level packet analysis
 	DestIP net.IP
 	SourceMac net.HardwareAddr
-	DestinationMAc net.HardwareAddr
+	DestinationMac net.HardwareAddr
 	MIMEType string // should tell us what kind of file rather data is flowing
 	// what if it's a domain name for source
 	Protocol string
 	DataSize int
-	URLS []string
+	URLS []string // remeber to map the URL's to the IP
 	IPs []map[string]string // domain:Ip
 	Malicious bool
 	TimeStamp time.Time
@@ -38,8 +38,18 @@ type Analysis struct {
 func PrintAnlysis(anls *Analysis) {
   utils.PrintTextInASpecificColorInBold("magenta","---------------------------------------------------------------------------------------------------")
   utils.PrintTextInASpecificColor("blue",fmt.Sprintf("Interface Name   %s",anls.InterfaceName))
-  utils.PrintTextInASpecificColor("blue",fmt.Sprintf("Souce IP   %s",anls.SourceIP.ToString()))
-  utils.PrintTextInASpecificColor("blue",fmt.Sprintf("Souce IP   %s",anls.DestIP.ToString()))
+  utils.PrintTextInASpecificColor("blue",fmt.Sprintf("Source IP   %s",anls.SourceIP.ToString()))
+  utils.PrintTextInASpecificColor("blue",fmt.Sprintf("Source IP   %s",anls.DestIP.ToString()))
+	utils.PrintTextInASpecificColor("blue",fmt.Sprintf("Source Mac   %s",anls.SourceMac.ToString()))
+	utils.PrintTextInASpecificColor("blue",fmt.Sprintf("DestinationMac   %s",anls.DestinationMac))
+	utils.PrintTextInASpecificColor("blue",fmt.Sprintf("MIMEType   %s",anls.MIMEType))
+	utils.PrintTextInASpecificColor("blue",fmt.Sprintf("Protocol   %s",anls.Protocol))
+	utils.PrintTextInASpecificColor("blue",fmt.Sprintf("DataSize   %d",anls.DataSize))
+	utils.PrintTextInASpecificColor("blue","IP's Found:")
+	// find a way to print up the IP's
+	utils.PrintTextInASpecificColor("blue",fmt.Sprintf("Malicious   %s",anls.Malicious))
+	utils.PrintTextInASpecificColor("blue",fmt.Sprintf("TimeStamp   %s",anls.TimeStamp.ToString()))
+	utils.PrintTextInASpecificColor("blue",fmt.Sprintf("Hash (Sha256 Hash of the packet in question)   %s",anls.Hash))
   utils.PrintTextInASpecificColorInBold("magenta","---------------------------------------------------------------------------------------------------")
 }
 
