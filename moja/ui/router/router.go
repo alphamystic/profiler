@@ -15,15 +15,15 @@ import(
 )
 
 type Router struct {
-  Mux *http.ServeMux
+  //Mux *http.ServeMux
   HTTPSvr *http.Server
   HTTPSSvr *http.Server
 }
 
 // should probably receive a server
-func NewRouter(httpsSvr,httpSvr *http.Server,mux *http.ServeMux) *Router {
+func NewRouter(httpsSvr,httpSvr *http.Server) *Router {
   return &Router {
-    Mux: mux,
+    //Mux: mux,
     HTTPSvr: httpSvr,
     HTTPSSvr: httpsSvr,
   }
@@ -53,31 +53,31 @@ func (rtr *Router) Run(reg bool){
 
   fmt.Println("Registering routes.......")
 
-  //rtr.Mux.HandleFunc("/",hnd.Home)
-  rtr.Mux.HandleFunc("/pcapanalyzer",hnd.PcapAnalyzer)
-  rtr.Mux.HandleFunc("/blank",hnd.Blank)
-  rtr.Mux.HandleFunc("/test",hnd.Test)
+  //http.HandleFunc("/",hnd.Home)
+  http.HandleFunc("/pcapanalyzer",hnd.PcapAnalyzer)
+  http.HandleFunc("/blank",hnd.Blank)
+  http.HandleFunc("/test",hnd.Test)
 
   fmt.Println("Handlers are registered............")
 
   // create a file server for the static files
-  fs := http.FileServer(http.Dir("./static"))
+  fs := http.FileServer(http.Dir("./moja//ui/static"))
   // Cache static files for 1 hour (adjust as needed)
-  rtr.Mux.Handle("/static/", http.StripPrefix("/static", http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
+  http.Handle("/static/", http.StripPrefix("/static", http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
     res.Header().Set("Cache-Control", "max-age=3600")
     fs.ServeHTTP(res,req)
   })))
 
   // create a file server for the downloadable files
-  downloads_dir := http.FileServer(http.Dir("./downloads"))
-  rtr.Mux.Handle("/downloads/", http.StripPrefix("/downloads", http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
+  downloads_dir := http.FileServer(http.Dir("./moja//ui/downloads"))
+  http.Handle("/downloads/", http.StripPrefix("/downloads", http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
     res.Header().Set("Cache-Control", "max-age=3600")
     downloads_dir.ServeHTTP(res,req)
   })))
 
   // create a file server for the uploaded files
-  uploads := http.FileServer(http.Dir("./uploads"))
-  rtr.Mux.Handle("/uploads/", http.StripPrefix("/uploads", http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
+  uploads := http.FileServer(http.Dir("./moja//ui/uploads"))
+  http.Handle("/uploads/", http.StripPrefix("/uploads", http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
     res.Header().Set("Cache-Control", "max-age=3600")
     uploads.ServeHTTP(res,req)
   })))

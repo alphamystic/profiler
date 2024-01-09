@@ -31,7 +31,7 @@ func main(){
     panic(err)
   }
   //mux := http.NewServeMux()
-  rtr := router.NewRouter(svrs,svr,http.NewServeMux())
+  rtr := router.NewRouter(svrs,svr)
   rtr.Run(true)
 }
 
