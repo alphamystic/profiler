@@ -12,5 +12,6 @@ type UserData struct {
   Email string
   Password string
   Verified bool
+  Userhash string
   utils.TimeStamps
 }

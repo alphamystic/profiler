@@ -99,20 +99,20 @@
 				<div class="dropdown">
 					<a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown">
 						<span class="user-icon">
-							<img src="/static/images/photo1.jpg" alt="">
+							<img src="/uploads/profile_images/{{.Userhash}}" alt="">
 						</span>
-						<span class="user-name">Ross C. Lopez</span>
+						<span class="user-name">{{.Username}}</span>
 					</a>
 					<div class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list">
-						<a class="dropdown-item" href="profile.html"><i class="dw dw-user1"></i> Profile</a>
-						<a class="dropdown-item" href="profile.html"><i class="dw dw-settings2"></i> Setting</a>
-						<a class="dropdown-item" href="faq.html"><i class="dw dw-help"></i> Help</a>
-						<a class="dropdown-item" href="login.html"><i class="dw dw-logout"></i> Log Out</a>
+						<a class="dropdown-item" href="/profile"><i class="dw dw-user1"></i> Profile</a>
+						<a class="dropdown-item" href="/setting"><i class="dw dw-settings2"></i> Setting</a>
+						<a class="dropdown-item" href="/faq"><i class="dw dw-help"></i> Help</a>
+						<a class="dropdown-item" href="/logout"><i class="dw dw-logout"></i> Log Out</a>
 					</div>
 				</div>
 			</div>
 			<div class="github-link">
-				<a href="https://github.com/dropways/deskapp" target="_blank"><img src="/static/images/github.svg" alt=""></a>
+				<a href="https://github.com/alphamystic/profiler" target="_blank"><img src="/static/images/github.svg" alt=""></a>
 			</div>
 		</div>
 	</div>
@@ -322,7 +322,7 @@
 							<li><a href="product.html">Product</a></li>
 							<li><a href="product-detail.html">Product Detail</a></li>
 							<li><a href="faq.html">FAQ</a></li>
-							<li><a href="profile.html">Profile</a></li>
+							<li><a href="/profile">Profile</a></li>
 							<li><a href="gallery.html">Gallery</a></li>
 							<li><a href="pricing-table.html">Pricing Tables</a></li>
 						</ul>

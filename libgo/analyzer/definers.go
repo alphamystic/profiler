@@ -18,6 +18,7 @@ type Filter struct {
 	YRS []dfn.YaraRule
 }
 
+// @TODO Set count for each Interface
 type Analysis struct {
 	InterfaceName string
 	SourceIP net.IP // should be equal to "MY" IP but different for .pcap or dns level packet analysis
