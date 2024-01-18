@@ -16,3 +16,12 @@ func (hnd *Handler) Test(res http.ResponseWriter, req *http.Request) {
 	/*fmt.Println("HND WORKS")
 	res.Write([]byte("Handler Test Function Works"))*/
 }
+
+/*
+So I want to serve a bunch of templates by combining them using text templates:
+  Header
+    Notifications
+  Sidebar
+  Body
+  Footer
+*/
