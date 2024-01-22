@@ -37,27 +37,35 @@ type Handler struct {
   Dbs *sql.DB
   RL *utils.RequestLogger
   ShutdownChan,DoneChan chan bool // channels to write into
+  Base string // the base template
+  TemplatesDir string // templates directory
 }
 
 // Initiates new handler
 func NewHandler(db_connection *sql.DB, shutdownCh chan bool, doneCh chan bool,rl *utils.RequestLogger) (*Handler,error) {
-  //tpl,err := template.ParseGlob("./moja/ui/templates/*.html")
+  /*tpl,err := template.ParseGlob("./moja/ui/templates/*.html")
   tpl,err := template.ParseGlob("./moja/ui/tmpl/*.tmpl")
   if err != nil{
     utils.Warning("[-]  Failed to load templates.")
     return nil,fmt.Errorf("[-]  This is not good like: ",err)
   }
+  */
+  var hnd = new(Handler)
+  hnd.Store = sessions.NewCookieStore([]byte(utils.RandNoLetter(30)))
+  hnd.Dbs = db_connection
+  hnd.ShutdownChan = shutdownCh
+  hnd.DoneChan = doneCh
+  hnd.RL = rl
+  hnd.TemplatesDir = "./moja/ui/tmpl/"
+  err := hnd.LoadBase()
+  if err != nil {
+    utils.Warning("[-]  Failed to load templates.")
+    return nil,err
+  }
   fmt.Println("[+]  Loaded all templates.")
   utils.PrintTextInASpecificColorInBold("white",fmt.Sprintf(" Starting Profiler server at: %s",currentTime))
   // create db configurations
-  return &Handler {
-    Tpl: tpl,
-    Store: sessions.NewCookieStore([]byte(utils.RandNoLetter(30))),
-    Dbs: db_connection,
-    ShutdownChan: shutdownCh,
-    DoneChan: doneCh,
-    RL: rl,
-  },nil
+  return hnd,nil
 }
 
 

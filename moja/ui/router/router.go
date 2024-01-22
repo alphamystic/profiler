@@ -54,6 +54,7 @@ func (rtr *Router) Run(reg bool){
   fmt.Println("Registering routes.......")
 
   //http.HandleFunc("/",hnd.Home)
+  http.HandleFunc("/createyr",hnd.CreateYaraRule)
   http.HandleFunc("/pcapanalyzer",hnd.PcapAnalyzer)
   http.HandleFunc("/blank",hnd.Blank)
   http.HandleFunc("/test",hnd.Test)

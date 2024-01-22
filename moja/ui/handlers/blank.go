@@ -3,24 +3,30 @@ package handlers
 import(
   "fmt"
   "net/http"
+  "github.com/alphamystic/profiler/libgo/utils"
 )
 
 func (hnd *Handler) Blank(res http.ResponseWriter, req *http.Request){
-  hnd.Tpl.ExecuteTemplate(res,"blank.html",nil)
-  fmt.Println("Running blank")
+  //hnd.Tpl.ExecuteTemplate(res,"blank.html",nil)
+  //fmt.Println("Running blank")
+  http.Error(res, "An error occurred", http.StatusInternalServerError)
   return
 }
 
 func (hnd *Handler) Test(res http.ResponseWriter, req *http.Request) {
-  //http.Error(res, "An error occurred", http.StatusInternalServerError)
-  data := map[string]interface{}{
-    "header":"header.tmpl",
-    "sidebar":"sidebar.tmpl",
-    "body":"body.tmpl",
-    "footer":"footer.tmpl",
+  tpl,err := hnd.GetATemplate("body","body.tmpl")
+  if err != nil{
+    utils.Warning(fmt.Sprintf("%s",err))
+    http.Error(res, "An error occurred", http.StatusInternalServerError)
   }
-	hnd.Tpl.ExecuteTemplate(res,"base.tmpl",data)
+  tpl.ExecuteTemplate(res,"body",nil)
+  fmt.Println("Error is nil page should be served")
 }
+
+/*
+Generate the string
+Return template.New
+Place the data into the template and serve it
 
 /*
 So I want to serve a bunch of templates by combining them using text templates:
