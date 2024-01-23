@@ -56,6 +56,9 @@ func (rtr *Router) Run(reg bool){
   //http.HandleFunc("/",hnd.Home)
   http.HandleFunc("/createyr",hnd.CreateYaraRule)
   http.HandleFunc("/pcapanalyzer",hnd.PcapAnalyzer)
+  http.HandleFunc("/chat",hnd.Chat)
+  http.HandleFunc("/auto",hnd.Auto)
+  http.HandleFunc("/profiles",hnd.Profiler)
   http.HandleFunc("/blank",hnd.Blank)
   http.HandleFunc("/test",hnd.Test)
 

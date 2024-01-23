@@ -1,11 +1,17 @@
 package handlers
 
-import(
+import (
+  "fmt"
   "net/http"
+  "github.com/alphamystic/profiler/libgo/utils"
 )
 
+// add phishing link
 func (hnd *Handler) Chat(res http.ResponseWriter, req *http.Request){
-  //hnd.Tpl.ExecuteTemplate(res,"chat.html",nil)
-  http.Error(res, "An error occurred", http.StatusInternalServerError)
-  return
+  tpl,err := hnd.GetATemplate("chat.tmpl","chat.tmpl")
+  if err != nil{
+    utils.Warning(fmt.Sprintf("%s",err))
+    http.Error(res, "An error occurred", http.StatusInternalServerError)
+  }
+  tpl.ExecuteTemplate(res,"chat.tmpl",nil)
 }

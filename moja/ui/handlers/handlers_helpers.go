@@ -37,7 +37,7 @@ type Handler struct {
   Dbs *sql.DB
   RL *utils.RequestLogger
   ShutdownChan,DoneChan chan bool // channels to write into
-  Base string // the base template
+  Base,BaseDash string // the base template
   TemplatesDir string // templates directory
 }
 

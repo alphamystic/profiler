@@ -28,6 +28,10 @@ func (hnd *Handler) LoadBase() error {
 	if err != nil {
 		return fmt.Errorf("Error loading base template: %q",err)
 	}
+	baseDash, err := ioutil.ReadFile(hnd.TemplatesDir + "base_dash.tmpl")
+	if err != nil {
+		return fmt.Errorf("Error loading base dash template: %q",err)
+	}
 	header, err := ioutil.ReadFile(hnd.TemplatesDir + "header.tmpl")
 	if err != nil {
 		return fmt.Errorf("Error loading header template: %q",err)
@@ -40,6 +44,12 @@ func (hnd *Handler) LoadBase() error {
 	if err != nil {
 		return  fmt.Errorf("Error loading footer template: %q",err)
 	}
+
+	// Put this 2 into a work group
+	combinedDash := strings.ReplaceAll(string(baseDash), "{{.HEADER}}", string(header))
+	combinedDash = strings.ReplaceAll(combinedDash, "{{.SIDEBAR}}", string(sidebar))
+	combinedDash = strings.ReplaceAll(combinedDash, "{{.FOOTER}}", string(footer))
+	hnd.BaseDash = combinedDash
 
 	// Replace placeholders in the base HTML with actual content
 	combinedHTML := strings.ReplaceAll(string(baseHTML), "{{.HEADER}}", string(header))
@@ -70,7 +80,21 @@ func (hnd *Handler) GetATemplate(name,templFile string) (*template.Template,erro
 	return tpl,nil
 }
 
+func (hnd *Handler) GetDash(name,templFile string) (*template.Template,error) {
+	body,err := ioutil.ReadFile(hnd.TemplatesDir + "pages/" + templFile)
+	if err != nil {
+		return nil,fmt.Errorf("Error getting template %s: %q",templFile,err)
+	}
+	sTpl := strings.ReplaceAll(hnd.BaseDash,"{{.BODY}}",string(body))
+	var tpl = template.New(name)
+	tpl,err = tpl.Parse(string(sTpl))
+	if err != nil{
+		return nil,fmt.Errorf("Error parsing body to template: %q",err)
+	}
+	return tpl,nil
+}
+
 func (hnd *Handler) CombineToBase(data string) string {
-	newBase := strings.ReplaceAll(hnd.Base,"{{.BODY}}",data)
+	newBase := strings.ReplaceAll(hnd.BaseDash,"{{.BODY}}",data)
 	return newBase
 }
