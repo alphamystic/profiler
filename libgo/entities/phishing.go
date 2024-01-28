@@ -14,3 +14,16 @@ type PhishingLinks struct {
   Target string
   utils.TimeStamps
 }
+
+
+func CreatePhishingLink() error {
+  return nil
+}
+
+func ListPhishingLinks() ([]ent.PhishingLinks,error) {
+  return nil,nil
+}
+
+func GetPhishingLink() (*ent.PhishingLinks,error) {
+  return nil,nil
+}

@@ -32,6 +32,10 @@ func (hnd *Handler) LoadBase() error {
 	if err != nil {
 		return fmt.Errorf("Error loading base dash template: %q",err)
 	}
+	prflDash,err := ioutil.ReadFile(hnd.TemplatesDir + "profile_dash.tmpl")
+	if err != nil {
+		return fmt.Errorf("Error loading header template: %q",err)
+	}
 	header, err := ioutil.ReadFile(hnd.TemplatesDir + "header.tmpl")
 	if err != nil {
 		return fmt.Errorf("Error loading header template: %q",err)
@@ -46,10 +50,15 @@ func (hnd *Handler) LoadBase() error {
 	}
 
 	// Put this 2 into a work group
-	combinedDash := strings.ReplaceAll(string(baseDash), "{{.HEADER}}", string(header))
+	combinedDash := strings.ReplaceAll(string(prflDash), "{{.HEADER}}", string(header))
 	combinedDash = strings.ReplaceAll(combinedDash, "{{.SIDEBAR}}", string(sidebar))
 	combinedDash = strings.ReplaceAll(combinedDash, "{{.FOOTER}}", string(footer))
 	hnd.BaseDash = combinedDash
+
+	combinedPfl := strings.ReplaceAll(string(baseDash), "{{.HEADER}}", string(header))
+	combinedPfl = strings.ReplaceAll(combinedPfl, "{{.SIDEBAR}}", string(sidebar))
+	combinedPfl = strings.ReplaceAll(combinedPfl, "{{.FOOTER}}", string(footer))
+	hnd.BaseProfiler = combinedPfl
 
 	// Replace placeholders in the base HTML with actual content
 	combinedHTML := strings.ReplaceAll(string(baseHTML), "{{.HEADER}}", string(header))
@@ -86,6 +95,20 @@ func (hnd *Handler) GetDash(name,templFile string) (*template.Template,error) {
 		return nil,fmt.Errorf("Error getting template %s: %q",templFile,err)
 	}
 	sTpl := strings.ReplaceAll(hnd.BaseDash,"{{.BODY}}",string(body))
+	var tpl = template.New(name)
+	tpl,err = tpl.Parse(string(sTpl))
+	if err != nil{
+		return nil,fmt.Errorf("Error parsing body to template: %q",err)
+	}
+	return tpl,nil
+}
+
+func (hnd *Handler) GetProfiler(name,templFile string) (*template.Template,error) {
+	body,err := ioutil.ReadFile(hnd.TemplatesDir + "pages/" + templFile)
+	if err != nil {
+		return nil,fmt.Errorf("Error getting template %s: %q",templFile,err)
+	}
+	sTpl := strings.ReplaceAll(hnd.BaseProfiler,"{{.BODY}}",string(body))
 	var tpl = template.New(name)
 	tpl,err = tpl.Parse(string(sTpl))
 	if err != nil{
